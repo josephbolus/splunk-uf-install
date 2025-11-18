@@ -44,6 +44,17 @@ else
   echo "Using provided SPLUNK_ADMIN_PASS from environment."
 fi
 
+### Create Splunk user before RPM installation ###################################
+
+# Create the Splunk user before RPM installation to avoid conflicts
+# The RPM will use this user if it already exists
+if ! id "${SPLUNK_USER}" >/dev/null 2>&1; then
+  echo "Creating ${SPLUNK_USER} user..."
+  /usr/sbin/useradd -r -d "${SPLUNK_HOME}" -s /sbin/nologin -c "Splunk Universal Forwarder" "${SPLUNK_USER}"
+else
+  echo "User ${SPLUNK_USER} already exists."
+fi
+
 ### Install Splunk UF RPM (if not already installed) ###########################
 
 if ! rpm -q splunkforwarder >/dev/null 2>&1; then
@@ -86,8 +97,7 @@ echo "Seeded admin credentials in ${SPLUNK_HOME}/etc/system/local/user-seed.conf
 
 ### Ownership + ACLs ###########################################################
 
-# Ensure Splunk tree owned by Splunk user (RPM should create this user)
-/usr/sbin/useradd -r -s /sbin/nologin "${SPLUNK_USER}" 2>/dev/null || true
+# Ensure Splunk tree owned by Splunk user
 chown -R "${SPLUNK_USER}:${SPLUNK_USER}" "${SPLUNK_HOME}"
 
 # Allow Splunk user read/execute on /var/log
