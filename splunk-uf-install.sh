@@ -48,7 +48,7 @@ fi
 
 if ! rpm -q splunkforwarder >/dev/null 2>&1; then
   echo "Downloading Splunk Universal Forwarder RPM..."
-  wget -q -O "${SPLUNK_RPM_NAME}" "${SPLUNK_RPM_URL}"
+  wget -O "${SPLUNK_RPM_NAME}" "${SPLUNK_RPM_URL}"
 
   chmod +x "${SPLUNK_RPM_NAME}"
   echo "Installing Splunk Universal Forwarder RPM..."
