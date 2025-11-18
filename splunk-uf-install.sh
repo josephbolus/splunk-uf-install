@@ -31,7 +31,8 @@ GENERATED_PASS=0
 
 if [[ -z "${SPLUNK_ADMIN_PASS:-}" ]]; then
   # Readable-ish: avoid ambiguous characters, use A-H J-N P-Z 2-9
-  RAND_SUFFIX="$(tr -dc 'A-HJ-NP-Z2-9' </dev/urandom | head -c 6)"
+  # Read a fixed block first to avoid SIGPIPE when head closes the pipe
+  RAND_SUFFIX="$(dd if=/dev/urandom bs=256 count=1 2>/dev/null | tr -dc 'A-HJ-NP-Z2-9' | head -c 6)"
   SPLUNK_ADMIN_PASS="Splunk${RAND_SUFFIX}"
   GENERATED_PASS=1
 fi
